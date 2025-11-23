@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Mantenimiento</title>
+    <style>
+        /* --- ESTILOS CSS (Diseño) --- */
+        
+        /* 1. Variables de Colores */
+        :root {
+            --color-fondo: #f0f2f5;
+            --color-blanco: #ffffff;
+            --color-primario: #007bff;    /* Azul */
+            --color-secundario: #6c757d;  /* Gris */
+            --color-peligro: #dc3545;     /* Rojo */
+            --color-borde: #dee2e6;
+        }
+
+        /* 2. Configuración General */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-fondo);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* Caja Principal */
+        .contenedor-principal {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* 3. Tarjetas (Simulan las hojas o páginas) */
+        .tarjeta {
+            background: var(--color-blanco);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        /* 4. Formularios */
+        .grupo-formulario {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--color-borde);
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        /* 5. Botones */
+        .boton {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+            transition: 0.2s;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .btn-azul { background-color: var(--color-primario); }
+        .btn-azul:hover { background-color: #0056b3; }
+
+        .btn-rojo { background-color: var(--color-peligro); }
+        .btn-gris { background-color: var(--color-secundario); }
+
+        /* 6. Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--color-borde);
+        }
+        
+        /* Efecto al pasar el mouse por una fila (para indicar que es clicable) */
+        .fila-clicable:hover {
+            background-color: #e9ecef;
+            cursor: pointer;
+        }
+
+        th {
+            background-color: var(--color-primario);
+            color: white;
+        }
+
+        /* 7. Lógica de Pantallas (SPA) */
+        /* Ocultamos todas las secciones por defecto */
+        .pantalla {
+            display: none;
+        }
+        
+        /* Solo mostramos la que tenga esta clase */
+        .pantalla-activa {
+            display: block;
+            animation: entradaSuave 0.5s;
+        }
+
+        @keyframes entradaSuave {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Estilos para la imagen previsualizada */
+        .img-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-top: 10px;
+            display: block;
+        }
+
+        /* Cabecera */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-principal">
+
+        <!-- ENCABEZADO SUPERIOR (Navegación) -->
+        <header id="encabezado-nav" style="display: none;">
+            <div>
+                <h3 style="margin: 0;">🏭 Sistema Mantenimiento</h3>
+                <small id="rol-usuario" style="color: gray;">Rol</small>
+            </div>
+            <div>
+                <span id="usuario-nav" style="margin-right: 10px; font-weight: bold;">Usuario</span>
+                <button onclick="cerrarSesion()" class="boton btn-rojo" style="padding: 5px 10px; font-size: 14px;">Salir</button>
+            </div>
+        </header>
+
+        <!-- =========================================
+             PANTALLA 1: LOGIN
+             ========================================= -->
+        <section id="vista-login" class="pantalla pantalla-activa">
+            <div class="tarjeta" style="max-width: 400px; margin: 50px auto; text-align: center;">
+                <h2>Iniciar Sesión</h2>
+                <p>Identifícate para acceder al sistema.</p>
+                
+                <div class="grupo-formulario">
+                    <input type="text" id="input-login" placeholder="Usuario (ej: admin, juan, operador1...)">
+                </div>
+
+                <button onclick="iniciarSesion()" class="boton btn-azul" style="width: 100%;">Entrar</button>
+                
+                <div style="margin-top: 20px; font-size: 12px; color: #666; text-align: left; background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                    <strong>Ayuda para pruebas:</strong><br>
+                    • <b>Admin:</b> Escribe "admin", "jefe" o "admin@gmail.com".<br>
+                    • <b>Operador:</b> Escribe cualquier otro nombre (ej: "Carlos").
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================
+             PANTALLA 2: OPERADOR (Perfil)
+             ========================================= -->
+        <section id="vista-operador" class="pantalla">
+            <div class="tarjeta">
+                <h2>👷 Hola, <span id="nombre-operador-titulo">Operador</span></h2>
+                <button onclick="irARegistro()" class="boton btn-azul">➕ Nuevo Registro</button>
+            </div>
+
+            <div class="tarjeta">
+                <h3>Mis Mantenimientos Realizados</h3>
+                <table id="tabla-operador">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Máquina</th>
+                            <th>Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-tabla-operador">
+                        <!-- JS llenará esto -->
+                    </tbody>
+                </table>
+                <p id="mensaje-vacio-operador" style="color: gray; display: none;">No hay registros.</p>
+            </div>
+        </section>
+
+        <!-- =========================================
+             PANTALLA 3: FORMULARIO DE REGISTRO
+             ========================================= -->
+        <section id="vista-registro" class="pantalla">
+            <div class="tarjeta">
+                <h3>📝 Nuevo Reporte de Mantenimiento</h3>
+                <form onsubmit="guardarRegistro(event)">
+                    
+                    <div class="grupo-formulario">
+                        <label>Fecha:</label>
+                        <input type="date" id="campo-fecha" required>
+                    </div>
+
+                    <div class="grupo-formulario">
+                        <label>Máquina:</label>
+                        <select id="campo-maquina" required>
+                            <option value="">-- Seleccionar --</option>
+                            <option value="Torno CNC">Torno CNC</option>
+                            <option value="Fresadora">Fresadora</option>
+                            <option value="Prensa Hidráulica">Prensa Hidráulica</option>
+                            <option value="Taladro Industrial">Taladro Industrial</option>
+                        </select>
+                    </div>
+
+                    <div class="grupo-formulario">
+                        <label>Tipo de Mantenimiento:</label>
+                        <select id="campo-tipo" required>
+                            <option value="Preventivo">Preventivo</option>
+                            <option value="Correctivo">Correctivo (Reparación)</option>
+                        </select>
+                    </div>
+
+                    <div class="grupo-formulario">
+                        <label>Descripción:</label>
+                        <textarea id="campo-detalles" rows="3" required placeholder="Detalles del trabajo..."></textarea>
+                    </div>
+
+                    <div class="grupo-formulario">
+                        <label>Foto (Opcional):</label>
+                        <!-- 'accept="image/*"' solo deja seleccionar imagenes -->
+                        <input type="file" id="campo-foto" accept="image/*">
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <button type="submit" class="boton btn-azul">Guardar</button>
+                        <button type="button" onclick="cambiarPantalla('vista-operador')" class="boton btn-rojo">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- =========================================
+             PANTALLA 4: ADMIN - LISTA GENERAL
+             ========================================= -->
+        <section id="vista-admin" class="pantalla">
+            
+            <!-- Alertas (Automáticas) -->
+            <div id="contenedor-alertas"></div>
+
+            <div class="tarjeta">
+                <h3>📊 Bitácora General</h3>
+                <p>Haz clic en cualquier fila para ver la <b>Previsualización</b>.</p>
+
+                <div class="grupo-formulario">
+                    <input type="text" id="buscador-admin" onkeyup="filtrarTablaAdmin()" placeholder="🔍 Buscar por máquina...">
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Máquina</th>
+                            <th>Operador</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-tabla-admin">
+                        <!-- JS llenará esto -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- =========================================
+             PANTALLA 5: ADMIN - PREVISUALIZACIÓN (Preview Page)
+             ========================================= -->
+        <section id="vista-preview" class="pantalla">
+            <div class="tarjeta">
+                <button onclick="cambiarPantalla('vista-admin')" class="boton btn-gris" style="margin-bottom: 15px;">⬅ Volver a la Lista</button>
+                
+                <h2 style="border-bottom: 2px solid var(--color-primario); padding-bottom: 10px;">
+                    🔎 Previsualización de Reporte
+                </h2>
+
+                <p><strong>Fecha:</strong> <span id="prev-fecha"></span></p>
+                <p><strong>Máquina:</strong> <span id="prev-maquina" style="font-size: 1.2em; font-weight: bold;"></span></p>
+                <p><strong>Operador:</strong> <span id="prev-operador"></span></p>
+                <p><strong>Tipo:</strong> <span id="prev-tipo" style="background: #e2e6ea; padding: 3px 8px; border-radius: 4px;"></span></p>
+
+                <!-- Contenedor para la imagen pequeña/mediana -->
+                <div id="prev-contenedor-img" style="margin: 20px 0; text-align: center; background: #fafafa; padding: 10px;">
+                    <!-- Aquí se inyectará la imagen -->
+                </div>
+
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <!-- Botón para ir a los detalles completos -->
+                    <button id="btn-ver-detalles" class="boton btn-azul">📄 Ver Detalles Completos</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================
+             PANTALLA 6: ADMIN - DETALLES COMPLETOS (Details Page)
+             ========================================= -->
+        <section id="vista-detalle" class="pantalla">
+            <div class="tarjeta">
+                <button onclick="volverAPreview()" class="boton btn-gris" style="margin-bottom: 15px;">⬅ Volver a Previsualización</button>
+                
+                <h2>📋 Reporte Completo de Mantenimiento</h2>
+                <hr>
+
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                    <p><strong>ID Registro:</strong> <span id="det-id" style="font-family: monospace;"></span></p>
+                    <p><strong>Fecha:</strong> <span id="det-fecha"></span></p>
+                    <p><strong>Máquina:</strong> <span id="det-maquina"></span></p>
+                    <p><strong>Operador Responsable:</strong> <span id="det-operador"></span></p>
+                    <p><strong>Tipo de Trabajo:</strong> <span id="det-tipo"></span></p>
+                    
+                    <hr style="border-top: 1px dashed #ccc;">
+                    
+                    <p><strong>Descripción Técnica:</strong></p>
+                    <p id="det-desc" style="white-space: pre-wrap;"></p> <!-- pre-wrap respeta los saltos de línea -->
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- =========================================
+         JAVASCRIPT (Lógica del Sistema)
+         ========================================= -->
+    <script>
+        // --- CONFIGURACIÓN ---
+        const NOMBRE_BD = "mantenimiento_db_v3";
+        const ADMINS = ['admin', 'admin@gmail.com', 'jefe', 'supervisor']; // Lista de administradores
+        
+        let usuarioActual = '';
+        let idRegistroSeleccionado = null; // Para saber qué registro estamos viendo
+
+        // --- 1. NAVEGACIÓN Y SESIÓN ---
+
+        function iniciarSesion() {
+            const input = document.getElementById('input-login').value.trim();
+            
+            if (!input) {
+                alert("Por favor, escribe un nombre.");
+                return;
+            }
+
+            usuarioActual = input;
+            
+            // Mostrar interfaz de usuario conectado
+            document.getElementById('usuario-nav').innerText = usuarioActual;
+            document.getElementById('encabezado-nav').style.display = 'flex';
+            
+            // Determinar rol
+            if (ADMINS.includes(usuarioActual.toLowerCase())) {
+                document.getElementById('rol-usuario').innerText = "(Administrador)";
+                cargarVistaAdmin();
+            } else {
+                document.getElementById('rol-usuario').innerText = "(Operador)";
+                cargarVistaOperador();
+            }
+        }
+
+        function cerrarSesion() {
+            location.reload(); // La forma más segura y fácil de limpiar todo
+        }
+
+        // Función maestra para cambiar de pantalla
+        function cambiarPantalla(idPantalla) {
+            // Ocultar todas
+            document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('pantalla-activa'));
+            // Mostrar la elegida
+            document.getElementById(idPantalla).classList.add('pantalla-activa');
+        }
+
+        // --- 2. LÓGICA DEL OPERADOR ---
+
+        function cargarVistaOperador() {
+            cambiarPantalla('vista-operador');
+            document.getElementById('nombre-operador-titulo').innerText = usuarioActual;
+            
+            // Cargar tabla
+            const registros = leerDatos();
+            const misRegistros = registros.filter(r => r.operador === usuarioActual);
+            const tbody = document.getElementById('cuerpo-tabla-operador');
+            tbody.innerHTML = '';
+
+            // Ordenar: recientes primero
+            misRegistros.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+            if (misRegistros.length === 0) {
+                document.getElementById('mensaje-vacio-operador').style.display = 'block';
+            } else {
+                document.getElementById('mensaje-vacio-operador').style.display = 'none';
+                misRegistros.forEach(r => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${r.fecha}</td>
+                            <td>${r.maquina}</td>
+                            <td>${r.tipo}</td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        function irARegistro() {
+            cambiarPantalla('vista-registro');
+            // Poner fecha de hoy
+            document.getElementById('campo-fecha').valueAsDate = new Date();
+            // Limpiar campos anteriores
+            document.getElementById('campo-maquina').value = "";
+            document.getElementById('campo-detalles').value = "";
+            document.getElementById('campo-foto').value = ""; 
+        }
+
+        // --- GUARDAR CON FOTO (Lógica importante) ---
+        function guardarRegistro(e) {
+            e.preventDefault();
+
+            const inputFoto = document.getElementById('campo-foto');
+            
+            // Paso 1: Verificar si hay foto y convertirla
+            if (inputFoto.files && inputFoto.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(evento) {
+                    // Aquí tenemos la imagen convertida a texto (Base64)
+                    const imagenBase64 = evento.target.result;
+                    guardarEnBD(imagenBase64); // Llamamos a guardar pasando la foto
+                };
+                
+                // Iniciamos la lectura del archivo
+                reader.readAsDataURL(inputFoto.files[0]);
+            } else {
+                // Si no hay foto, guardamos pasando null
+                guardarEnBD(null);
+            }
+        }
+
+        function guardarEnBD(fotoBase64) {
+            // Validar que haya usuario (por si acaso)
+            if (!usuarioActual) {
+                alert("Error: No hay usuario activo. Por favor inicia sesión de nuevo.");
+                location.reload();
+                return;
+            }
+
+            const nuevoRegistro = {
+                id: Date.now(),
+                fecha: document.getElementById('campo-fecha').value,
+                maquina: document.getElementById('campo-maquina').value,
+                tipo: document.getElementById('campo-tipo').value,
+                descripcion: document.getElementById('campo-detalles').value,
+                operador: usuarioActual,
+                foto: fotoBase64 // Guardamos la foto (texto largo) o null
+            };
+
+            const registros = leerDatos();
+            registros.push(nuevoRegistro);
+
+            // INTENTAR GUARDAR (Manejo de errores de espacio lleno)
+            try {
+                localStorage.setItem(NOMBRE_BD, JSON.stringify(registros));
+                alert("✅ Registro guardado correctamente.");
+                
+                // Limpiar formulario completamente
+                document.querySelector('form').reset();
+                // Volver a poner la fecha de hoy
+                document.getElementById('campo-fecha').valueAsDate = new Date();
+                
+                cargarVistaOperador();
+            } catch (error) {
+                // Si entra aquí, es porque falló el guardado (probablemente memoria llena)
+                console.error(error);
+                alert("❌ Error: No se pudo guardar.\n\nCausa probable: La imagen es muy pesada y llenó la memoria local del navegador.\n\nIntenta subir el reporte SIN foto o con una imagen más pequeña.");
+            }
+        }
+
+        // --- 3. LÓGICA DEL ADMINISTRADOR ---
+
+        function cargarVistaAdmin() {
+            cambiarPantalla('vista-admin');
+            const registros = leerDatos();
+            const tbody = document.getElementById('cuerpo-tabla-admin');
+            tbody.innerHTML = '';
+
+            // Ordenar por fecha
+            registros.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+            if (registros.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">No hay datos aún.</td></tr>';
+                return;
+            }
+
+            registros.forEach(r => {
+                // Creamos la fila
+                // Nota: Añadimos onclick para ir a la previsualización
+                const fila = `
+                    <tr class="fila-clicable" onclick="irAPreview(${r.id})" title="Clic para ver previsualización">
+                        <td>${r.fecha}</td>
+                        <td><strong>${r.maquina}</strong></td>
+                        <td>${r.operador}</td>
+                        <td><button class="boton btn-azul" style="font-size: 12px; padding: 5px;">Ver</button></td>
+                    </tr>
+                `;
+                tbody.innerHTML += fila;
+            });
+
+            generarAlertas(registros);
+        }
+
+        // --- A. PÁGINA DE PREVISUALIZACIÓN (Preview) ---
+        function irAPreview(id) {
+            idRegistroSeleccionado = id; // Guardamos el ID en memoria
+            const registros = leerDatos();
+            const reg = registros.find(r => r.id === id);
+
+            if (!reg) return;
+
+            // Llenamos los datos de la vista Preview
+            document.getElementById('prev-fecha').innerText = reg.fecha;
+            document.getElementById('prev-maquina').innerText = reg.maquina;
+            document.getElementById('prev-operador').innerText = reg.operador;
+            document.getElementById('prev-tipo').innerText = reg.tipo;
+
+            // Manejo de Imagen
+            const contenedorImg = document.getElementById('prev-contenedor-img');
+            if (reg.foto) {
+                contenedorImg.innerHTML = `<img src="${reg.foto}" class="img-preview" alt="Evidencia">`;
+                contenedorImg.style.display = 'block';
+            } else {
+                contenedorImg.innerHTML = '<span style="color:#999;">Sin evidencia fotográfica.</span>';
+                // No ocultamos el contenedor para que se vea el mensaje
+            }
+
+            // Configurar el botón para ir a detalles completos
+            document.getElementById('btn-ver-detalles').onclick = function() {
+                irADetalles(id);
+            };
+
+            cambiarPantalla('vista-preview');
+        }
+
+        // --- B. PÁGINA DE DETALLES COMPLETOS ---
+        function irADetalles(id) {
+            const registros = leerDatos();
+            const reg = registros.find(r => r.id === id);
+
+            document.getElementById('det-id').innerText = reg.id;
+            document.getElementById('det-fecha').innerText = reg.fecha;
+            document.getElementById('det-maquina').innerText = reg.maquina;
+            document.getElementById('det-operador').innerText = reg.operador;
+            document.getElementById('det-tipo').innerText = reg.tipo;
+            document.getElementById('det-desc').innerText = reg.descripcion;
+
+            cambiarPantalla('vista-detalle');
+        }
+
+        function volverAPreview() {
+            // Usamos el ID guardado para volver a cargar la preview
+            irAPreview(idRegistroSeleccionado);
+        }
+
+        // --- C. FILTROS Y ALERTAS ---
+
+        function filtrarTablaAdmin() {
+            const texto = document.getElementById('buscador-admin').value.toLowerCase();
+            const filas = document.querySelectorAll('#cuerpo-tabla-admin tr');
+
+            filas.forEach(fila => {
+                const textoFila = fila.innerText.toLowerCase();
+                if (textoFila.includes(texto)) {
+                    fila.style.display = '';
+                } else {
+                    fila.style.display = 'none';
+                }
+            });
+        }
+
+        function generarAlertas(registros) {
+            const div = document.getElementById('contenedor-alertas');
+            div.innerHTML = '';
+
+            if(registros.length > 0) {
+                const hoy = new Date();
+                const ultimaFecha = new Date(registros[0].fecha);
+                const diffDias = Math.floor((hoy - ultimaFecha) / (1000 * 60 * 60 * 24));
+
+                if (diffDias > 7) {
+                    div.innerHTML = `<div class="tarjeta" style="background:#fff3cd; color: #856404; padding: 10px;">
+                        ⚠️ <b>Alerta:</b> No se han registrado mantenimientos en los últimos ${diffDias} días.
+                    </div>`;
+                }
+            }
+        }
+
+        // --- UTILIDADES ---
+        function leerDatos() {
+            return JSON.parse(localStorage.getItem(NOMBRE_BD)) || [];
+        }
+    </script>
+</body>
+</html>
