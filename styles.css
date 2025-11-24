@@ -1,0 +1,289 @@
+/* --- VARIABLES DE COLOR --- */
+:root {
+    --color-fondo: #f0f2f5;
+    --color-blanco: #ffffff;
+    --color-primario: #007bff;     /* Azul Institucional */
+    --color-secundario: #6c757d;   /* Gris */
+    --color-peligro: #dc3545;      /* Rojo */
+    --color-borde: #dee2e6;        /* Gris claro para líneas */
+    --sombra-suave: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* --- ESTILOS GENERALES Y FONDO DE LOGIN --- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+
+    /* 1. FONDO INDUSTRIAL (Por defecto para el Login) */
+    background-image: url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    /* Centrado del Login (Flexbox) */
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* 2. CAPA OSCURA (Overlay) para que el texto resalte sobre la foto */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6); /* Oscuridad al 60% */
+    z-index: -1;
+    backdrop-filter: blur(4px); /* Efecto borroso elegante */
+}
+
+/* --- ESTADO: SESIÓN INICIADA (Fondo Limpio) --- */
+/* Esta clase se agrega con JS cuando entras al sistema */
+body.sesion-iniciada {
+    background-image: none;       /* Quita la foto */
+    background-color: #f0f2f5;    /* Pone el gris */
+    display: block;               /* Quita el centrado flex */
+    padding-top: 20px;
+}
+
+/* Ocultamos la capa oscura cuando ya estamos adentro */
+body.sesion-iniciada::before { display: none; }
+
+/* --- CONTENEDORES Y TARJETAS --- */
+.contenedor-principal {
+    max-width: 950px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.tarjeta {
+    background: var(--color-blanco);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: var(--sombra-suave);
+    margin-bottom: 25px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.login-card {
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* --- LOGO --- */
+.login-logo {
+    max-width: 150px; /* Ajusta esto según tu imagen */
+    margin-bottom: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* --- FORMULARIOS E INPUTS --- */
+.grupo-formulario { margin-bottom: 20px; }
+label { display: block; font-weight: 600; margin-bottom: 8px; color: #495057; }
+
+/* Estilo base de los inputs */
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--color-borde);
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+/* --- INPUTS CON ÍCONOS (La clave del diseño) --- */
+.input-con-icono {
+    position: relative;
+}
+.input-con-icono i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #adb5bd; /* Gris claro para el ícono */
+    font-size: 14px;
+}
+.input-con-icono input {
+    padding-left: 42px; /* Espacio para no escribir encima del ícono */
+}
+
+/* --- BOTONES --- */
+.boton {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    transition: background 0.2s, transform 0.1s;
+    display: inline-block;
+    text-align: center;
+}
+.boton:active { transform: scale(0.98); }
+
+.btn-azul { background-color: var(--color-primario); }
+.btn-azul:hover { background-color: #0056b3; }
+
+.btn-rojo { background-color: var(--color-peligro); }
+.btn-rojo:hover { background-color: #bd2130; }
+
+.btn-gris { background-color: var(--color-secundario); }
+.btn-gris:hover { background-color: #545b62; }
+
+/* --- OPCIONES LOGIN --- */
+.opciones-login {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin-bottom: 25px;
+    color: #666;
+}
+.link-olvide {
+    color: var(--color-primario);
+    text-decoration: none;
+    font-weight: 500;
+}
+.link-olvide:hover { text-decoration: underline; }
+
+/* --- TABLAS MODERNAS (Estilo Premium) --- */
+table { 
+    width: 100%; 
+    border-collapse: separate; 
+    border-spacing: 0; 
+    margin-top: 15px; 
+}
+
+th { 
+    background-color: #f8f9fa; /* Encabezado gris suave */
+    color: #495057;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e9ecef;
+    padding: 15px;
+    text-align: left;
+}
+
+td {
+    padding: 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
+    color: #333;
+}
+
+/* Bordes redondeados en la tabla */
+tr:first-child th:first-child { border-top-left-radius: 8px; }
+tr:first-child th:last-child { border-top-right-radius: 8px; }
+
+/* Efecto hover en filas */
+.fila-clicable:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+/* --- PREVIEW DE IMÁGENES --- */
+.img-preview { 
+    max-width: 100%; 
+    max-height: 300px; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* --- HEADER SUPERIOR (Navegación) --- */
+header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    background: white; 
+    padding: 15px 25px; 
+    border-radius: 12px; 
+    margin-bottom: 25px; 
+    box-shadow: var(--sombra-suave); 
+}
+
+/* --- UTILIDADES --- */
+.error-msg { 
+    color: var(--color-peligro); 
+    font-size: 14px; 
+    margin-top: 15px; 
+    display: none; 
+}
+
+/* Animaciones de cambio de pantalla */
+.pantalla { display: none; }
+.pantalla-activa { 
+    display: block; 
+    animation: aparecer 0.4s ease-out; 
+}
+
+@keyframes aparecer { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+/* --- Estilos para el Ojo de la contraseña --- */
+
+/* Ajustamos el ícono del ojo específicamente */
+#toggle-password {
+    left: auto;          /* Anulamos el left del ícono normal */
+    right: 15px;         /* Lo pegamos a la derecha */
+    cursor: pointer;     /* Que parezca botón al pasar el mouse */
+    z-index: 10;         /* Aseguramos que esté encima del input */
+    transition: color 0.2s;
+}
+
+#toggle-password:hover {
+    color: var(--color-primario); /* Se pone azul cuando le pasas el mouse */
+}
+
+/* Importante: Dar espacio a la derecha del input para que el texto no choque con el ojo */
+#input-password {
+    padding-right: 40px; 
+}
+
+/* =========================================
+   ADAPTABILIDAD MÓVIL (RESPONSIVE)
+   ========================================= */
+
+/* 1. Contenedor para hacer scroll en las tablas */
+.tabla-responsive {
+    width: 100%;
+    overflow-x: auto; /* Permite deslizar horizontalmente */
+    -webkit-overflow-scrolling: touch; /* Deslizamiento suave en iPhone */
+    border: 1px solid #eee; /* Un borde sutil */
+    border-radius: 8px;
+}
+
+/* 2. Ajustes para pantallas pequeñas (Celulares) */
+@media (max-width: 600px) {
+    /* Quitamos márgenes grandes para aprovechar la pantalla */
+    body { padding: 10px; }
+    
+    /* Tarjetas más compactas */
+    .tarjeta { padding: 15px; }
+
+    /* Ajustamos el tamaño de los botones para dedos */
+    .boton { 
+        width: 100%; /* Botones de ancho completo */
+        margin-bottom: 10px; 
+    }
+    
+    /* En la tabla, evitamos que el texto se rompa feo */
+    th, td { white-space: nowrap; }
+}
